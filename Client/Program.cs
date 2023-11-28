@@ -15,8 +15,8 @@ builder.Services.AddAuthentication("Cookie")
         o.ClientId = "x";
         o.ClientSecret = "x";
 
-        o.AuthorizationEndpoint = "http://localhost:5000/oauth/authorize";
-        o.TokenEndpoint = "http://localhost:5000/oauth/token";
+        o.AuthorizationEndpoint = "http://localhost:5001/oauth/authorize";
+        o.TokenEndpoint = "http://localhost:5001/oauth/token";
         o.CallbackPath = "/oauth/custom-cb";
 
         o.UsePkce = true;
@@ -41,19 +41,23 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapGet("/", () => "Authenticated").RequireAuthorization();
+app.MapGet("/", () => "Client");
 
-app.MapGet("/login", (HttpContext context) =>
+app.MapGet("/auth", () => "Authenticated").RequireAuthorization();
+
+app.MapGet("/login", (string ReturnUrl, HttpContext context) =>
 {
-    var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}";
+    return "OK";
+    //var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}/{ReturnUrl}";
+    //var authProperties = new AuthenticationProperties()
+    //{
+    //    RedirectUri = baseUrl,
+    //};
 
-    return Results.Challenge(
-        new AuthenticationProperties()
-        {
-            RedirectUri = baseUrl,
-        },
-        authenticationSchemes: new List<string> { "Custom" }
-    );
+    //return Results.Challenge(
+    //    authProperties,
+    //    authenticationSchemes: new List<string> { "Custom" }
+    //);
 });
 
 app.Run();
