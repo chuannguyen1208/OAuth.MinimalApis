@@ -13,6 +13,7 @@ builder.Services.AddAuthentication("Cookie")
 	{
 		o.LoginPath = "/login";
 	});
+
 builder.Services.AddAuthorization();
 builder.Services.AddSingleton<DevKeys>();
 
@@ -27,6 +28,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthorization();
+
+app.MapGet("/", () => "Authenticated").RequireAuthorization();
 app.MapOAuthEndpoints();
 
 app.Run();

@@ -6,7 +6,6 @@ namespace OAuthService.Endpoints.OAuth;
 
 public static class AuthorizationEndpoints
 {
-
 	public static IResult Handle(
 		HttpRequest request,
 		IDataProtectionProvider dataProtectionProvider)

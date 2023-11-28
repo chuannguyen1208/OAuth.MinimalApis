@@ -30,11 +30,15 @@ builder.Services.AddAuthentication("Cookie")
         };
     });
 
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", (HttpContext ctx) => ctx.User.Claims.Select(s => new { s.Type, s.Value }).ToList());
+app.UseAuthorization();
+
+app.MapGet("/", () => "Authenticated").RequireAuthorization();
 
 app.MapGet("/login", () =>
 {
