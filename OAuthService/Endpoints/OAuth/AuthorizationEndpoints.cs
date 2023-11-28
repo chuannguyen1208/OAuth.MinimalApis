@@ -8,11 +8,9 @@ public static class AuthorizationEndpoints
 {
 	public static IResult Handle(
 		HttpRequest request,
-		IDataProtectionProvider dataProtectionProvider,
-		HttpContext context)
+		IDataProtectionProvider dataProtectionProvider)
 	{
-        var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}";
-        var iss = HttpUtility.UrlEncode(baseUrl);
+		var iss = HttpUtility.UrlEncode("http://localhost:5001");
         request.Query.TryGetValue("state", out var state);
 
         if (!request.Query.TryGetValue("response_type", out var responseType))
