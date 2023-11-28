@@ -15,8 +15,8 @@ builder.Services.AddAuthentication("Cookie")
         o.ClientId = "x";
         o.ClientSecret = "x";
 
-        o.AuthorizationEndpoint = "http://localhost:5001/oauth/authorize";
-        o.TokenEndpoint = "http://localhost:5001/oauth/token";
+        o.AuthorizationEndpoint = "http://localhost:5000/oauth/authorize";
+        o.TokenEndpoint = "http://localhost:5000/oauth/token";
         o.CallbackPath = "/oauth/custom-cb";
 
         o.UsePkce = true;
@@ -43,12 +43,14 @@ app.UseAuthorization();
 
 app.MapGet("/", () => "Authenticated").RequireAuthorization();
 
-app.MapGet("/login", () =>
+app.MapGet("/login", (HttpContext context) =>
 {
+    var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}";
+
     return Results.Challenge(
         new AuthenticationProperties()
         {
-            RedirectUri = "http://localhost:5002",
+            RedirectUri = baseUrl,
         },
         authenticationSchemes: new List<string> { "Custom" }
     );
