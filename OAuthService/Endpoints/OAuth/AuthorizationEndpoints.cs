@@ -11,13 +11,24 @@ public static class AuthorizationEndpoints
 		HttpRequest request,
 		IDataProtectionProvider dataProtectionProvider)
 	{
-		request.Query.TryGetValue("response_type", out var responseType);
+		var iss = HttpUtility.UrlEncode("http://localhost:5001");
+        request.Query.TryGetValue("state", out var state);
+
+        if (!request.Query.TryGetValue("response_type", out var responseType))
+		{
+			return Results.BadRequest(new
+			{
+				error = "invalid_request",
+				state,
+				iss
+			});
+		}
+		
 		request.Query.TryGetValue("client_id", out var clientId);
 		request.Query.TryGetValue("code_challenge", out var codeChallenge);
 		request.Query.TryGetValue("code_challenge_method", out var codeChallengeMethod);
 		request.Query.TryGetValue("redirect_uri", out var redirecUri);
 		request.Query.TryGetValue("scope", out var scope);
-		request.Query.TryGetValue("state", out var state);
 
 		var protector = dataProtectionProvider.CreateProtector("oauth");
 		var code = new AuthCode
@@ -31,6 +42,6 @@ public static class AuthorizationEndpoints
 
 		var codeString = protector.Protect(JsonSerializer.Serialize(code));
 
-		return Results.Redirect($"{redirecUri}?code={codeString}&state={state}&iss={HttpUtility.UrlEncode("http://localhost:5003")}");
+		return Results.Redirect($"{redirecUri}?code={codeString}&state={state}&iss={HttpUtility.UrlEncode("http://localhost:5001")}");
 	}
 }

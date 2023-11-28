@@ -2,11 +2,6 @@ using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 builder.Services.AddAuthentication("cookie")
     .AddCookie("cookie")
     .AddOAuth("custom", o =>
@@ -17,7 +12,7 @@ builder.Services.AddAuthentication("cookie")
         o.ClientSecret = "x";
 
         o.AuthorizationEndpoint = "http://localhost:5001/oauth/authorize";
-        o.TokenEndpoint = "https://localhost:5001/oauth/token";
+        o.TokenEndpoint = "http://localhost:5001/oauth/token";
         o.CallbackPath = "/oauth/custom-cb";
 
         o.UsePkce = true;
@@ -31,14 +26,9 @@ builder.Services.AddAuthentication("cookie")
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
+
+app.MapGet("/", () => "Ok");
 
 app.MapGet("/login", () =>
 {
