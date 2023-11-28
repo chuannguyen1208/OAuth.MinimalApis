@@ -29,11 +29,11 @@ public static class LoginEndpoints
 					{
 						new(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
 					},
-					"cookie"
+					"Cookie"
 				)
 			);
 
-		await context.SignInAsync("cookie", claimsPrinciple);
+		await context.SignInAsync("Cookie", claimsPrinciple);
 
 		return Results.Redirect(returnUrl);
 	}

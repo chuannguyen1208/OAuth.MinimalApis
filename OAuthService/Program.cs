@@ -8,8 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication("cookie")
-	.AddCookie("cookie", o =>
+builder.Services.AddAuthentication("Cookie")
+	.AddCookie("Cookie", o =>
 	{
 		o.LoginPath = "/login";
 	});

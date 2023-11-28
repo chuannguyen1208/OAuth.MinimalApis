@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Authentication;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication("cookie")
-    .AddCookie("cookie")
-    .AddOAuth("custom", o =>
+builder.Services.AddAuthentication("Cookie")
+    .AddCookie("Cookie")
+    .AddOAuth("Custom", o =>
     {
-        o.SignInScheme = "cookie";
+        o.SignInScheme = "Cookie";
 
         o.ClientId = "x";
         o.ClientSecret = "x";
@@ -17,9 +18,14 @@ builder.Services.AddAuthentication("cookie")
 
         o.UsePkce = true;
         o.ClaimActions.MapJsonKey("sub", "sub");
+        o.ClaimActions.MapJsonKey("custom 33", "custom");
         o.Events.OnCreatingTicket = async ctx =>
         {
-            // todo: map claims
+            var payloadBase64 = ctx.AccessToken!.Split('.')[1];
+            var payloadJson = Base64UrlTextEncoder.Decode(payloadBase64);
+            var payload = JsonDocument.Parse(payloadJson);
+            ctx.RunClaimActions(payload.RootElement);
+
             await Task.CompletedTask;
         };
     });
@@ -28,7 +34,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () => "Ok");
+app.MapGet("/", (HttpContext ctx) => ctx.User.Claims.Select(s => new { s.Type, s.Value }).ToList());
 
 app.MapGet("/login", () =>
 {
@@ -37,7 +43,7 @@ app.MapGet("/login", () =>
         {
             RedirectUri = "http://localhost:5002",
         },
-        authenticationSchemes: new List<string> { "custom" }
+        authenticationSchemes: new List<string> { "Custom" }
     );
 });
 
