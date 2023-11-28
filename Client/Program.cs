@@ -4,7 +4,10 @@ using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication("Cookie")
-    .AddCookie("Cookie")
+    .AddCookie("Cookie", o =>
+    {
+        o.LoginPath = "/login";
+    })
     .AddOAuth("Custom", o =>
     {
         o.SignInScheme = "Cookie";
